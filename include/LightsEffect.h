@@ -13,11 +13,5 @@ public:
     void draw() override;
 
 private:
-    const std::array<CRGB, 5> colors = {
-        CRGB::Magenta,
-        CRGB::BlueViolet,
-        CRGB::Amethyst,
-        CRGB::Orange,
-        CRGB::Aquamarine
-    };
+
 };

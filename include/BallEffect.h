@@ -7,6 +7,7 @@
 /* Local Includes */
 #include "EffectInterface.h"
 
+/* Ball effect taken from https://github.com/davepl/DavesGarageLEDSeries/ */
 class BallEffect : public EffectInterface
 {
 public:
@@ -28,9 +29,17 @@ private:
 
     bool mirrored_;
 
-    double initialBallSpeed(double height) const;
+    double initialBallSpeed(double height) const
+    {
+        return sqrt(-2 * Gravity * height);
+    }
 
-    static double time();
+    static double time()
+    {
+        timeval tv = { 0 };
+        gettimeofday(&tv, nullptr);
+        return (double)(tv.tv_usec / 1000000.0 + (double) tv.tv_sec);
+    }
 
     std::array<CRGB, 5> colors = {
         CRGB::Green,

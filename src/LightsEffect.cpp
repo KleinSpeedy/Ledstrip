@@ -9,14 +9,13 @@ LightsEffect::LightsEffect(uint8_t encoding, CRGB *ledStrip)
     setLedStrip(ledStrip);
 };
 
-int randomNumber;
 void LightsEffect::draw()
 {
-    fadeToBlackBy(ledStrip_, NUM_LEDS, 1);
+    uint16_t position_ = beatsin16(8, 0, NUM_LEDS-1, 0, 0);
+    uint8_t color = beatsin8(5, 0, 255, 0, 0);
 
-    EVERY_N_MILLISECONDS(50)
-    {
-        randomNumber = random8(5);
-        ledStrip_[random16(0,NUM_LEDS-1)] = colors.at(randomNumber);
-    }
+    ledStrip_[position_] = CHSV(color, 255, 255);
+    ledStrip_[NUM_LEDS - position_] = CHSV(255 - color, 255, 255);
+
+    fadeToBlackBy(ledStrip_, NUM_LEDS, 25);
 }

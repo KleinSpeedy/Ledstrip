@@ -3,21 +3,21 @@
 /* Local Includes */
 #include "BallEffect.h"
 
-BallEffect::BallEffect(uint8_t encoding, CRGB *ledStrip, size_t length, size_t count, uint8_t fade, bool mirrored)
+BallEffect::BallEffect(uint8_t encoding, CRGB *ledStrip, size_t length, size_t ballCount, uint8_t fade, bool mirrored)
 : stripLength_(length - 1),
-    numBalls_(count),
+    numBalls_(ballCount),
     fadeRate_(fade),
     mirrored_(mirrored),
-    timeAtLastBounce_(count),
-    heigth_(count),
-    ballSpeed_(count),
-    dampening_(count),
-    ballColor_(count)
+    timeAtLastBounce_(ballCount),
+    heigth_(ballCount),
+    ballSpeed_(ballCount),
+    dampening_(ballCount),
+    ballColor_(ballCount)
 {
     setEncoding(encoding);
     setLedStrip(ledStrip);
 
-    for(size_t i = 0; i < numBalls_; i++)
+    for(size_t i = 0; i < ballCount; i++)
     {
         heigth_[i]              = StartHeight;  // current ball height
         timeAtLastBounce_[i]    = time();   // when ball last hit the ground
@@ -59,31 +59,18 @@ void BallEffect::draw()
             {
                 ballSpeed_[i] = initialBallSpeed(StartHeight) * dampening_[i];
             }
+        }
 
-            size_t position = (size_t)(heigth_[i] * (stripLength_ -1) / StartHeight);
+        size_t position = (size_t)(heigth_[i] * (stripLength_ -1) / StartHeight);
 
-            ledStrip_[stripLength_] = ballColor_[i];
-            ledStrip_[stripLength_ + 1] = ballColor_[i];
+        ledStrip_[position] += ballColor_[i];
+        ledStrip_[position + 1] += ballColor_[i];
 
-            if(mirrored_)
-            {
-                ledStrip_[stripLength_ - 1 - position] = colors[i];
-                ledStrip_[stripLength_ - position] = colors[i];
-            }
-            
+        if(mirrored_)
+        {
+            ledStrip_[stripLength_ - 1 - position] += ballColor_[i];
+            ledStrip_[stripLength_ - position] += ballColor_[i];
         }
     }
     delay(20);
-}
-
-double BallEffect::initialBallSpeed(double height) const
-{
-    return sqrt(-2 * Gravity * height);
-}
-
-double BallEffect::time()
-{
-    timeval tv = { 0 };
-    gettimeofday(&tv, nullptr);
-    return (double)(tv.tv_usec / 100000.0 + (double) tv.tv_sec);
 }
