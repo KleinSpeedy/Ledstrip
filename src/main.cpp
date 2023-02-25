@@ -15,16 +15,14 @@
 /* Globals */
 
 constexpr int NUM_LEDS = 600;
-static constexpr int LED_DATA_PIN = 0;
-
-#define MSG_LEN 256
+static constexpr uint8_t LED_DATA_PIN = 0;
 
 // Relais Pins
 
-static constexpr uint8_t PIN_RELAIS_1 = 1;
-static constexpr uint8_t PIN_RELAIS_2 = 2;
-static constexpr uint8_t PIN_RELAIS_3 = 3;
-static constexpr uint8_t PIN_RELAIS_4 = 4;
+static constexpr uint8_t PIN_RELAIS_1 = 26;
+static constexpr uint8_t PIN_RELAIS_2 = 27;
+static constexpr uint8_t PIN_RELAIS_3 = 32;
+static constexpr uint8_t PIN_RELAIS_4 = 33;
 
 CRGB g_ledStrip[NUM_LEDS] {{}};
 uint8_t g_ledBrightness = 255;
@@ -36,13 +34,15 @@ enum Encoding : uint8_t
   christmas = 0,
   fireworks,
   lights,
-  snowflakes,
   balls,
   heatwave,
-  rainbow
+  rainbow,
+  idle,//< default!
+  snowflakes = 15 // show this!, relais all one (0b1111) on first try
 };
 
-uint8_t g_encoding = Encoding::snowflakes;
+// TODO: make it interface specific
+uint8_t g_encoding = Encoding::fireworks;
 
 /* Effect objects */
 
@@ -65,22 +65,20 @@ void setup()
   pinMode(PIN_RELAIS_3, INPUT_PULLUP);
   pinMode(PIN_RELAIS_4, INPUT_PULLUP);
 
-  Serial.begin(9600);
-
   FastLED.addLeds<WS2812B, LED_DATA_PIN, GRB>(g_ledStrip, NUM_LEDS);
 
   FastLED.setBrightness(g_ledBrightness);
-  FastLED.setMaxPowerInMilliWatts(50000);
+  FastLED.setMaxPowerInMilliWatts(60000);
 
   FastLED.clear(true);
 }
 
-uint8_t buffer[MSG_LEN] = {{}};
-
 void loop()
 {
   // TODO: make this a ISR
-  //updateEncoding();
+  updateEncoding();
+
+  Serial.println(g_encoding);
 
   switch(g_encoding)
   {
@@ -119,8 +117,12 @@ void loop()
       effect_rainbow.draw();
       break;
     }
+    case Encoding::idle:
     default:
+    {
+      FastLED.clear(true);
       break;
+    }
   }
 
   FastLED.show();

@@ -14,6 +14,8 @@ public:
     void draw() override;
 
 private:
-    std::array<CRGB,NUM_LEDS*10> stretchedStrip {};
-    uint8_t index = 0;
+    const uint8_t hueDensity_ = 4;  // 
+    const uint8_t deltaHue_ = 1;    // drawingSpeed low - stretched out, high - tightly packed
+
+    uint8_t initialHue_ = 0;
 };

@@ -7,7 +7,7 @@
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/rc/tn/rainbow.png.index.html
 // converted for FastLED with gammas (2.6, 2.2, 2.5)
 // Size: 48 bytes of program space.
-
+/*
 DEFINE_GRADIENT_PALETTE( rb_gp ) {
     0, 126,  1,142,
    25, 171,  1, 26,
@@ -24,6 +24,7 @@ DEFINE_GRADIENT_PALETTE( rb_gp ) {
 };
 
 CRGBPalette16 rainbow_gp = rb_gp;
+*/ // keep for later use!
 
 RainbowEffect::RainbowEffect(uint8_t encoding, CRGB *ledStrip)
 {
@@ -33,12 +34,8 @@ RainbowEffect::RainbowEffect(uint8_t encoding, CRGB *ledStrip)
 
 void RainbowEffect::draw()
 {
-    fill_palette(stretchedStrip.data(), stretchedStrip.size(), index++, 0, rainbow_gp, 255, LINEARBLEND);
-    EVERY_N_MILLISECONDS(25)
+    EVERY_N_MILLISECONDS(50)
     {
-        for(int i = 0; i < NUM_LEDS; i++)
-        {
-            ledStrip_[i] = stretchedStrip.at(i);
-        }
+        fill_rainbow(ledStrip_, NUM_LEDS, initialHue_ += hueDensity_, deltaHue_);
     }
 }

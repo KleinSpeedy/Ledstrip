@@ -12,6 +12,6 @@ public:
     void draw() override;
 
 private:
-    uint8_t encoding_;
-
+    CRGB colorFraction(CRGB inColor, float fraction);
+    void drawPixels(float fPos, float count, CRGB color);
 };
